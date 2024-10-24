@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Animated, ScrollView, StyleSheet, View, Image, Dimensions } from 'react-native';
 import type { ViewProps } from 'ViewPropTypes';
-import type { FlatList, SectionList, ListView } from 'react-native';
+import type { FlatList, SectionList, ListView, Platform } from 'react-native';
 
 type ScrollViewProps = {
   onScroll?: ?Function,
@@ -283,7 +283,7 @@ class ImageHeaderScrollView extends Component<Props, State> {
           ref={ref => {
             this.scrollViewRef = ref;
           }}
-          overScrollMode="never"
+          overScrollMode= {Platform.OS==='ios' ? "never" : "always" }
           {...scrollViewProps}
           contentContainerStyle={[
             {
