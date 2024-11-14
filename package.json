@@ -52,5 +52,8 @@
   "eslintConfig": {
     "extends": "bambi/native"
   },
-  "types": "./src/index.d.ts"
+  "types": "./src/index.d.ts",
+  "harmony": {
+    "alias": "react-native-image-header-scroll-view"
+  }
 }
