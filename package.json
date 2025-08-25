@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-oh-tpl/react-native-image-header-scroll-view",
-  "version": "0.10.3-0.0.3",
+  "name": "@react-native-ohos/react-native-image-header-scroll-view",
+  "version": "1.0.0",  
   "description": "ScrollView with an image in header which become a navbar",
   "main": "src/index.js",
   "scripts": {
@@ -11,12 +11,11 @@
   "files": [
     "README.md",
     "LICENCE",
-    "src",
-    "readmeAssets"
+    "src"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bamlab/react-native-image-header-scroll-view.git"
+    "url": "git+https://github.com/react-native-oh-library/react-native-image-header-scroll-view.git"
   },
   "keywords": [
     "React-native",
@@ -30,17 +29,16 @@
   "author": "Nhacsam <nicolas@djambazian.fr>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bamlab/react-native-image-header-scroll-view/issues"
+    "url": "https://github.com/react-native-oh-library/react-native-image-header-scroll-view/issues"
   },
-  "homepage": "https://github.com/bamlab/react-native-image-header-scroll-view#readme",
+  "homepage": "https://github.com/react-native-oh-library/react-native-image-header-scroll-view/tree/br_rnoh0.77#readme",
   "devDependencies": {
     "babel-preset-react-native": "4.0.0",
     "eslint": "^4.14.0",
-    "eslint-config-bambi": "^1.2.0",
     "flow-bin": "^0.61.0",
     "prettier": "^1.10.2",
-    "react": "16.2.0",
-    "react-native": "0.52.2"
+    "react": "18.3.1",
+    "react-native": "0.77.1"
   },
   "peerDependencies": {
     "react": ">=15.3.1",

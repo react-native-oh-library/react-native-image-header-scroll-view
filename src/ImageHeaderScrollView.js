@@ -10,6 +10,12 @@ import { Animated, ScrollView, StyleSheet, View, Image, Dimensions } from 'react
 import type { ViewProps } from 'ViewPropTypes';
 import type { FlatList, SectionList, ListView, Platform } from 'react-native';
 
+// Create the context for scrollY and scrollPageY
+export const ScrollContext = React.createContext({
+  scrollY: PropTypes.instanceOf(Animated.Value),
+  scrollPageY: PropTypes.number,
+});
+
 type ScrollViewProps = {
   onScroll?: ?Function,
   style?: $PropertyType<ViewProps, 'style'>,
@@ -105,12 +111,12 @@ class ImageHeaderScrollView extends Component<Props, State> {
     };
   }
 
-  getChildContext() {
-    return {
-      scrollY: this.state.scrollY,
-      scrollPageY: this.state.pageY + this.props.minHeight,
-    };
-  }
+  // getChildContext() {
+  //   return {
+  //     scrollY: this.state.scrollY,
+  //     scrollPageY: this.state.pageY + this.props.minHeight,
+  //   };
+  // }
 
   interpolateOnImageHeight(outputRange: Array<number>) {
     const headerScrollDistance = this.props.maxHeight - this.props.minHeight;
@@ -269,48 +275,55 @@ class ImageHeaderScrollView extends Component<Props, State> {
     const inset = maxHeight - minHeight;
 
     return (
-      <View
-        style={[
-          styles.container,
-          {
-            paddingTop: minHeight,
-            backgroundColor: scrollViewBackgroundColor,
-          },
-        ]}
-        ref={ref => {
-          this.container = ref;
+      <ScrollContext.Provider
+        value={{
+          scrollY: this.state.scrollY,
+          scrollPageY: this.state.pageY + this.props.minHeight,
         }}
-        onLayout={this.onContainerLayout}
       >
-        {this.renderHeader()}
-        <ScrollViewComponent
-          scrollEventThrottle={useNativeDriver ? 1 : 16}
-          ref={ref => {
-            this.scrollViewRef = ref;
-          }}
-          overScrollMode= {Platform.OS==='ios' ? "never" : "always" }
-          {...scrollViewProps}
-          contentContainerStyle={[
+        <View
+          style={[
+            styles.container,
             {
+              paddingTop: minHeight,
               backgroundColor: scrollViewBackgroundColor,
-              marginTop: inset,
-              paddingBottom: inset,
             },
-            contentContainerStyle,
-            childrenStyle,
           ]}
-          style={[styles.container, style]}
-          onScroll={
-            useNativeDriver
-              ? Animated.event([{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }], {
+          ref={ref => {
+            this.container = ref;
+          }}
+          onLayout={this.onContainerLayout}
+        >
+          {this.renderHeader()}
+          <ScrollViewComponent
+            scrollEventThrottle={useNativeDriver ? 1 : 16}
+            ref={ref => {
+              this.scrollViewRef = ref;
+            }}
+            overScrollMode="never"
+            {...scrollViewProps}
+            contentContainerStyle={[
+              {
+                backgroundColor: scrollViewBackgroundColor,
+                marginTop: inset,
+                paddingBottom: inset,
+              },
+              contentContainerStyle,
+              childrenStyle,
+            ]}
+            style={[styles.container, style]}
+            onScroll={
+              useNativeDriver
+                ? Animated.event([{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }], {
                   useNativeDriver: true,
                 })
-              : this.onScroll
-          }
-        />
-        {this.renderTouchableFixedForeground()}
-        {this.renderForeground()}
-      </View>
+                : this.onScroll
+            }
+          />
+          {this.renderTouchableFixedForeground()}
+          {this.renderForeground()}
+        </View>
+      </ScrollContext.Provider>
     );
   }
 
@@ -450,10 +463,10 @@ class ImageHeaderScrollView extends Component<Props, State> {
   }
 }
 
-ImageHeaderScrollView.childContextTypes = {
-  scrollY: PropTypes.instanceOf(Animated.Value),
-  scrollPageY: PropTypes.number,
-};
+// ImageHeaderScrollView.childContextTypes = {
+//   scrollY: PropTypes.instanceOf(Animated.Value),
+//   scrollPageY: PropTypes.number,
+// };
 
 const styles = StyleSheet.create({
   container: {

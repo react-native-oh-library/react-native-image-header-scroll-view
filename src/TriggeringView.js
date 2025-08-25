@@ -2,57 +2,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { View, Animated } from 'react-native';
+import { ScrollContext } from './ImageHeaderScrollView';
 
-type Props = {
-  onBeginHidden: Function,
-  onHide: Function,
-  onBeginDisplayed: Function,
-  onDisplay: Function,
-  onTouchTop: Function,
-  onTouchBottom: Function,
-  children?: React$Node,
-  onLayout?: Function,
-  bottomOffset?: number,
-  topOffset?: number,
-};
+class TriggeringView extends Component {
+  initialPageY = 0;
+  listenerId = '';
+  ref = null; // Reference to the view
+  height = 0;
+  prevScrollY = null;
 
-type DefaultProps = {
-  onBeginHidden: Function,
-  onHide: Function,
-  onBeginDisplayed: Function,
-  onDisplay: Function,
-  onTouchTop: Function,
-  onTouchBottom: Function,
-  bottomOffset: number,
-  topOffset: number,
-};
+  static contextType = ScrollContext;
 
-type State = {
-  touched: boolean,
-  hidden: boolean,
-};
-
-type Context = {
-  scrollPageY?: number,
-  scrollY: Animated.Value,
-};
-
-class TriggeringView extends Component<Props, State> {
-  initialPageY: number;
-  listenerId: string;
-  ref: ?any; // @see https://github.com/facebook/react-native/issues/15955
-  height: number;
-  context: Context;
-
-  onScroll: Function;
-  onRef: Function;
-  onLayout: Function;
-  state: State = {
-    touched: false,
-    hidden: false,
-  };
-
-  static defaultProps: DefaultProps = {
+  static defaultProps = {
     onBeginHidden: () => {},
     onHide: () => {},
     onBeginDisplayed: () => {},
@@ -63,31 +24,54 @@ class TriggeringView extends Component<Props, State> {
     topOffset: 0,
   };
 
-  constructor(props: Props) {
+  state = {
+    touched: false,
+    hidden: false,
+  };
+
+  constructor(props) {
     super(props);
-    this.initialPageY = 0;
+    this.onScroll = this.onScroll.bind(this);
+    this.onRef = this.onRef.bind(this);
+    this.onLayout = this.onLayout.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    this.setupScrollListener();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // 检查上下文是否发生变化
+    if (this.prevScrollY !== this.context.scrollY) {
+      this.cleanupScrollListener(this.prevScrollY);
+      this.setupScrollListener();
+      this.prevScrollY = this.context.scrollY;
+    }
+  }
+
+  componentWillUnmount() {
+    this.cleanupScrollListener(this.context.scrollY);
+  }
+
+  setupScrollListener() {
     if (!this.context.scrollY) {
       return;
     }
     this.listenerId = this.context.scrollY.addListener(this.onScroll);
+    this.prevScrollY = this.context.scrollY;
   }
 
-  componentWillReceiveProps(nextProps: Props, nextContext: Context) {
-    if (!this.context.scrollY) {
-      return;
+  cleanupScrollListener(scrollY) {
+    if (scrollY && this.listenerId) {
+      scrollY.removeListener(this.listenerId);
     }
-    this.context.scrollY.removeListener(this.listenerId);
-    this.listenerId = nextContext.scrollY.addListener(this.onScroll);
   }
 
-  onRef = (ref: any) => {
+  onRef(ref) {
     this.ref = ref;
-  };
+  }
 
-  onLayout = (e: *) => {
+  onLayout(e) {
     if (this.props.onLayout) {
       this.props.onLayout(e);
     }
@@ -99,33 +83,38 @@ class TriggeringView extends Component<Props, State> {
     this.ref.measure((x, y, width, height, pageX, pageY) => {
       this.initialPageY = pageY;
     });
-  };
+  }
 
-  onScroll = (event: *) => {
+  onScroll(event) {
     if (!this.context.scrollPageY) {
       return;
     }
     const pageY = this.initialPageY - event.value;
     this.triggerEvents(this.context.scrollPageY, pageY, pageY + this.height);
-  };
+  }
 
-  triggerEvents(value: number, top: number, bottom: number) {
+  triggerEvents(value, top, bottom) {
     const { bottomOffset, topOffset } = this.props;
-    if (!this.state.touched && value >= top + topOffset) {
+    
+    // 检查是否触顶
+    const isTouchingTop = value >= top + topOffset;
+    if (!this.state.touched && isTouchingTop) {
       this.setState({ touched: true });
       this.props.onBeginHidden();
       this.props.onTouchTop(true);
-    } else if (this.state.touched && value < top + topOffset) {
+    } else if (this.state.touched && !isTouchingTop) {
       this.setState({ touched: false });
       this.props.onDisplay();
       this.props.onTouchTop(false);
     }
 
-    if (!this.state.hidden && value >= bottom + bottomOffset) {
+    // 检查是否触底
+    const isTouchingBottom = value >= bottom + bottomOffset;
+    if (!this.state.hidden && isTouchingBottom) {
       this.setState({ hidden: true });
       this.props.onHide();
       this.props.onTouchBottom(true);
-    } else if (this.state.hidden && value < bottom + bottomOffset) {
+    } else if (this.state.hidden && !isTouchingBottom) {
       this.setState({ hidden: false });
       this.props.onBeginDisplayed();
       this.props.onTouchBottom(false);
@@ -133,7 +122,6 @@ class TriggeringView extends Component<Props, State> {
   }
 
   render() {
-    /* eslint-disable no-unused-vars */
     const {
       onBeginHidden,
       onHide,
@@ -143,19 +131,18 @@ class TriggeringView extends Component<Props, State> {
       onTouchBottom,
       ...viewProps
     } = this.props;
-    /* eslint-enable no-unused-vars */
 
     return (
-      <View ref={this.onRef} collapsable={false} {...viewProps} onLayout={this.onLayout}>
+      <View 
+        ref={this.onRef} 
+        collapsable={false} 
+        {...viewProps} 
+        onLayout={this.onLayout}
+      >
         {this.props.children}
       </View>
     );
   }
 }
-
-TriggeringView.contextTypes = {
-  scrollY: PropTypes.instanceOf(Animated.Value),
-  scrollPageY: PropTypes.number,
-};
 
 export default TriggeringView;
