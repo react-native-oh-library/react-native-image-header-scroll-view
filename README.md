@@ -1,6 +1,6 @@
-# @react-native-oh-tpl/react-native-image-header-scroll-view
+# @react-native-ohos/react-native-image-header-scroll-view
 
-本项目基于 [react-native-image-header-scroll-view](https://github.com/bamlab/react-native-image-header-scroll-view)
+本项目基于 [react-native-image-header-scroll-view@v1.0.0](https://github.com/bamlab/react-native-image-header-scroll-view/tree/v1.0.0)
 
 ## 文档地址  Documentation URL 
 
