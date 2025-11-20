@@ -4,7 +4,7 @@
   "name": "rnoh",
   "description": "example description",
   "repository": {},
-  "version": "1.0.0",
+  "version": "1.1.0-rc.1",
   "overrides": {
     "@rnoh/react-native-openharmony": "file:./../node_modules/react-native-harmony/harmony/react_native_openharmony.har"
   },
