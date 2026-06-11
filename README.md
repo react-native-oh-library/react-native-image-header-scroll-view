@@ -1,12 +1,12 @@
-# @react-native-oh-tpl/react-native-image-header-scroll-view
+# @react-native-ohos/react-native-image-header-scroll-view
 
 本项目基于 [react-native-image-header-scroll-view](https://github.com/bamlab/react-native-image-header-scroll-view)
 
 ## 文档地址  Documentation URL 
 
-[中文  Chinese](https://gitee.com/react-native-oh-library/usage-docs/blob/master/zh-cn/react-native-image-header-scroll-view.md)
+[中文  Chinese](https://gitcode.com/CPF-RN/usage-docs/blob/master/zh-cn/react-native-image-header-scroll-view.md)
 
-[英文  English](https://gitee.com/react-native-oh-library/usage-docs/blob/master/zh-en/react-native-image-header-scroll-view.md)
+[英文  English](https://gitcode.com/CPF-RN/usage-docs/blob/master/en/react-native-image-header-scroll-view.md)
 
 ## 请悉知  Acknowledgements
 
